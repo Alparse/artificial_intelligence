@@ -3,9 +3,9 @@ import matplotlib.pyplot as plt
 import pickle
 import data_load_MNIST
 
-networkStructure = np.array([784, 300,30, 10])
+networkStructure = np.array([784, 300, 30, 10])
 
-network_activations = {0: 'input', 1: 'tanh', 2: 'tanh',3: 'sig'}
+network_activations = {0: 'input', 1: 'tanh', 2: 'tanh', 3: 'sig'}
 
 numLayers = np.size(networkStructure) - 1
 
@@ -17,11 +17,11 @@ alpha = 1
 
 lambd = 3
 
-randmag =.3
+randmag = .3
 
 iterations = 1000
 
-cost_target =.5
+cost_target = .5
 
 
 def sigmoid(Z):
@@ -82,12 +82,12 @@ def initialize_train_network():
 
     global X
     X = X_train.T
-    print('Shape of X ',np.shape(X))
+    print('Shape of X ', np.shape(X))
     global Y
     Y = Y_train.T
     global m
     m = np.size(X_train.T, 1)
-    print('m ',m)
+    print('m ', m)
 
     global layers
     layers = {'A0': X}
@@ -159,11 +159,11 @@ def back_propagate():
         layers['b' + str(i)] = layers['b' + str(i)] - alpha * gradients['db' + str(i)]
 
 
-#Load Data    >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+# Load Data    >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 print('Loading Data')
 X_train, Y_train, X_test, Y_test = data_load_MNIST.load_data()
 
-#Train Network  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+# Train Network  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 initialize_train_network()
 
 cost_curve = []
@@ -176,11 +176,10 @@ for i in range(1, iterations):
         (Y * np.log(layers['A' + str(output_layer)])) + (1 - Y) * np.log(1 - layers['A' + str(output_layer)]))
     print(cost)
     cost_curve.append(cost)
-    if cost<= cost_target:
+    if cost <= cost_target:
         break
 
-
-#Test Network>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+# Test Network>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 initialize_test_network()
 forward_propagate()
 cost = -1 / m * np.sum(
