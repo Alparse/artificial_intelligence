@@ -19,9 +19,9 @@ lambd = 3
 
 randmag = .3
 
-iterations = 10
+iterations = 20
 
-cost_target = 5
+cost_target = 1
 
 
 def sigmoid(Z):
