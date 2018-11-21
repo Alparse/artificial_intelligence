@@ -36,6 +36,7 @@ training_op = optimizer.apply_gradients(grads_and_vars_feed)
 init = tf.global_variables_initializer()
 saver = tf.train.Saver()
 
+
 def discount_rewards(rewards, discount_rate):
     discounted_rewards = np.zeros(len(rewards))
     cumulative_rewards = 0
@@ -44,12 +45,14 @@ def discount_rewards(rewards, discount_rate):
         discounted_rewards[step] = cumulative_rewards
     return discounted_rewards
 
+
 def discount_and_normalize_rewards(all_rewards, discount_rate):
     all_discounted_rewards = [discount_rewards(rewards, discount_rate) for rewards in all_rewards]
     flat_rewards = np.concatenate(all_discounted_rewards)
     reward_mean = flat_rewards.mean()
     reward_std = flat_rewards.std()
-    return [(discounted_rewards - reward_mean)/reward_std for discounted_rewards in all_discounted_rewards]
+    return [(discounted_rewards - reward_mean) / reward_std for discounted_rewards in all_discounted_rewards]
+
 
 discount_rewards([10, 0, -50], discount_rate=0.8)
 
@@ -76,12 +79,12 @@ with tf.Session() as sess:
             current_gradients = []
             obs = env.reset()
             for step in range(n_max_steps):
-                #env.render()
+                # env.render()
                 action_val, gradients_val = sess.run([action, gradients], feed_dict={X: obs.reshape(1, n_inputs)})
                 obs, reward, done, info = env.step(action_val[0][0])
                 current_rewards.append(reward)
                 current_gradients.append(gradients_val)
-                if game==9 and iteration >=125:
+                if game == 9 and iteration >= 125:
                     env.render()
                 if done:
                     print(step, "Steps")
@@ -95,15 +98,10 @@ with tf.Session() as sess:
         for var_index, gradient_placeholder in enumerate(gradient_placeholders):
             mean_gradients = np.mean([reward * all_gradients[game_index][step][var_index]
                                       for game_index, rewards in enumerate(all_rewards)
-                                          for step, reward in enumerate(rewards)], axis=0)
+                                      for step, reward in enumerate(rewards)], axis=0)
             feed_dict[gradient_placeholder] = mean_gradients
         sess.run(training_op, feed_dict=feed_dict)
         if iteration % save_iterations == 0:
             saver.save(sess, "./my_policy_net_pg.ckpt")
 
-
 env.close()
-
-frames = render_policy_net("./my_policy_net_pg.ckpt", action, X, n_max_steps=1000)
-video = plot_animation(frames)
-plt.show()
