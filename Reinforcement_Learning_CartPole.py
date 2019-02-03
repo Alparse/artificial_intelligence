@@ -15,8 +15,8 @@ initializer = tf.variance_scaling_initializer()
 X = tf.placeholder(tf.float32, shape=[None, n_inputs])
 
 hidden = tf.layers.dense(X, n_hidden, activation=tf.nn.elu, kernel_initializer=initializer)
-logits = tf.layers.dense(hidden, n_outputs)
-outputs = tf.nn.sigmoid(logits)  # probability of action 0 (left)
+logits = tf.layers.dense(hidden, n_outputs) #logits is tfinal layer in neural network without applying activation function
+outputs = tf.nn.sigmoid(logits)  # probability of action 0 (left),
 p_left_and_right = tf.concat(axis=1, values=[outputs, 1 - outputs])
 action = tf.multinomial(tf.log(p_left_and_right), num_samples=1)
 
@@ -31,6 +31,7 @@ for grad, variable in grads_and_vars:
     gradient_placeholder = tf.placeholder(tf.float32, shape=grad.get_shape())
     gradient_placeholders.append(gradient_placeholder)
     grads_and_vars_feed.append((gradient_placeholder, variable))
+
 training_op = optimizer.apply_gradients(grads_and_vars_feed)
 
 init = tf.global_variables_initializer()
@@ -64,7 +65,7 @@ env._max_episode_steps = 3000
 
 n_games_per_update = 10
 n_max_steps = 1000
-n_iterations = 200
+n_iterations = 300
 save_iterations = 10
 discount_rate = 0.95
 
@@ -84,7 +85,7 @@ with tf.Session() as sess:
                 obs, reward, done, info = env.step(action_val[0][0])
                 current_rewards.append(reward)
                 current_gradients.append(gradients_val)
-                if game == 9 and iteration >= 125:
+                if game == 9 and iteration == 299:
                     env.render()
                 if done:
                     print(step, "Steps")
